@@ -1,4 +1,54 @@
 #include "malloc.h"
 
+static b_data control;
+
+size_t align(size_t size)
+{
+	size += size % 8;
+	return (size);
+}
+
+void make_break(size_t n_size)
+{
+	while (control.left_over < n_size + M_HEAD_SIZE)
+	{
+		if (sbrk(PG_SIZE) == (void *)-1)
+			return;
+		control.left_over += PG_SIZE;
+	}
+}
+
+void check_end(char *new_addr)
+{
+	while (new_addr != control.end)
+		new_addr += M_HEAD_SIZE + *(size_t *)new_addr;
+	if (new_addr == control.end)
+	{
+		new_addr += M_HEAD_SIZE + *(size_t *)new_addr;
+		control.end = new_addr;
+	}
+}
 
 
+void *naive_malloc(size_t size)
+{
+	size_t n_size;
+	char *new_addr;
+
+	if (control.beg == NULL)
+		control.beg = sbrk(0);
+
+	n_size = align(size);
+
+	make_break(n_size);
+
+	new_addr = control.beg;
+
+	if (control.end)
+		check_end(new_addr);
+	else
+		control.end = new_addr;
+
+	*(size_t*)new_addr = size;
+	return (new_addr + M_HEAD_SIZE);
+}
