@@ -5,7 +5,7 @@ size_t header_sz = sizeof(header_m);
 
 size_t align(size_t size)
 {
-	size += size % 8;
+	size += 8 - size % 8;
 	return (size);
 }
 
