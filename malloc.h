@@ -7,6 +7,7 @@
 #include <string.h>
 
 #define PG_SIZE 4096
+#define HDR_SZ 16
 
 
 

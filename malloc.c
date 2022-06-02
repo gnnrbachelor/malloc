@@ -1,7 +1,7 @@
 #include "malloc.h"
 
 static b_data control;
-size_t header_sz = sizeof(size_t);
+size_t header_sz = sizeof(header_m);
 
 size_t align(size_t size)
 {
