@@ -1,6 +1,7 @@
 #include "malloc.h"
 
 static b_data control;
+size_t header_sz = sizeof(header_m);
 
 size_t align(size_t size)
 {
@@ -8,9 +9,9 @@ size_t align(size_t size)
 	return (size);
 }
 
-void make_break(size_t n_size)
+void calc_break(size_t n_size)
 {
-	while (control.left_over < n_size + M_HEAD_SIZE)
+	while (control.left_over < n_size + header_sz)
 	{
 		if (sbrk(PG_SIZE) == (void *)-1)
 			return;
@@ -18,15 +19,16 @@ void make_break(size_t n_size)
 	}
 }
 
-void check_end(char *new_addr)
+char *check_end(char *new_addr)
 {
 	while (new_addr != control.end)
-		new_addr += M_HEAD_SIZE + *(size_t *)new_addr;
+		new_addr += header_sz + *(size_t *)new_addr;
 	if (new_addr == control.end)
 	{
-		new_addr += M_HEAD_SIZE + *(size_t *)new_addr;
+		new_addr += header_sz + *(size_t *)new_addr;
 		control.end = new_addr;
 	}
+	return (new_addr);
 }
 
 
@@ -40,15 +42,15 @@ void *naive_malloc(size_t size)
 
 	n_size = align(size);
 
-	make_break(n_size);
+	calc_break(n_size);
 
 	new_addr = control.beg;
 
 	if (control.end)
-		check_end(new_addr);
+		new_addr = check_end(new_addr);
 	else
 		control.end = new_addr;
 
 	*(size_t*)new_addr = size;
-	return (new_addr + M_HEAD_SIZE);
+	return (new_addr + header_sz);
 }

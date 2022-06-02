@@ -7,7 +7,6 @@
 #include <string.h>
 
 #define PG_SIZE 4096
-#define M_HEAD_SIZE sizeof(header_m)
 
 
 
@@ -22,6 +21,8 @@ typedef struct block_data
 	char *beg;
 	char *end;
 	size_t left_over;
+	header_m cur;
+	header_m next;
 } b_data;
 
 void *naive_malloc(size_t size);
