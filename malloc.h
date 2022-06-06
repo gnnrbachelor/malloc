@@ -22,10 +22,9 @@ typedef struct block_data
 	char *beg;
 	char *end;
 	size_t left_over;
-	header_m cur;
-	header_m next;
 } b_data;
 
 void *naive_malloc(size_t size);
+void *_malloc(size_t size);
 
 #endif
